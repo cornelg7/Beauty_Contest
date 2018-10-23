@@ -1,2 +1,2 @@
-# Beauty_Contest
+# Beauty Contest
 Third year final project
