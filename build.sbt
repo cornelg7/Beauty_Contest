@@ -1,8 +1,8 @@
 enablePlugins(ScalaJSPlugin, WorkbenchPlugin)
 
-name := "Example"
+name := "Beauty Contest"
 
-version := "0.1-SNAPSHOT"
+version := "0.1"
 
 scalaVersion := "2.11.8"
 
