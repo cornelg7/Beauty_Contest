@@ -8,9 +8,7 @@ import scalatags.JsDom.all._
 
 import scala.scalajs.js
 
-@JSExport
 object playaround {
-  @JSExport
   def main(canvas: html.Canvas): Unit = {
     val renderer = canvas.getContext("2d")
       .asInstanceOf[dom.CanvasRenderingContext2D]
@@ -34,9 +32,7 @@ object playaround {
   }
 }
 
-@JSExport
-object HelloWorld0 extends{
-  @JSExport
+object HelloWorld0 {
   def main(target: html.Div, targetCanvas: html.Canvas) = {
 
     val box = input(
