@@ -2,18 +2,24 @@ package beautycontest.Controlers
 
 import scala.collection.mutable.ListBuffer
 
+// Needs:  p,   a list of Players
+// Can return:  winNumber,   a list of (player, choice, win)
 class Round(p: Float, playerList: List[Player]) {
 
-  var winNumber:Integer = 0
-  var winnerList:List[((Player, Int), Boolean)] = List()
+  // public win number for this round
+  var winNumber:Int = 0
+    // did player player with choice choice win this round?
+  case class InfoForPlayer(player: Player, choice: Int, win: Boolean)
+    // public list of InfoForPlayer
+  var infoList:List[InfoForPlayer] = List()
+  // the players and their choices
+  private var playerAndNumberList:List[(Player, Int)] = List()
 
-  def run():Unit = {
+  def startRound():Unit = {
+    playerAndNumberList = playerList.zip(playerList.map((x:Player) => x.getChoice))
     winNumber = computeWinNumber()
-    winnerList = computeWinners()
+    infoList = computeWinners().map(tupleToCaseClass)
   }
-
-    // the players and their choices
-  val playerAndNumberList:List[(Player, Int)] = playerList.zip(playerList.map((x:Player) => x.getChoice))
 
   private def computeWinNumber(): Int = {
     var sum:Integer = 0
@@ -22,6 +28,8 @@ class Round(p: Float, playerList: List[Player]) {
     }
     (sum.toFloat / playerAndNumberList.length.toFloat * p).toInt
   }
+
+  private def tupleToCaseClass(x:((Player, Int), Boolean)): InfoForPlayer = x match{case x@((p, c), w) => InfoForPlayer(p, c, w)}
 
   private def computeWinners():List[((Player, Int), Boolean)] = {
     var minDistance = 101 // shortest distance from winning number to each player
