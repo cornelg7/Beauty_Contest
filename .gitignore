@@ -1,13 +1,14 @@
-target/*
-!target/scala-2.11/
-target/scala-2.11/*
-!target/scala-2.11/beauty-contest-fastopt.js
-!target/scala-2.11/beauty-contest-opt.js
-!target/scala-2.11/classes/
-target/scala-2.11/classes/*
-!index-dev.html
-!index-opt.html
 project/*
 *.cache
 *.class
 .idea/
+target/*
+!target/scala-2.11/
+target/scala-2.11/*
+!target/scala-2.11/classes/
+target/scala-2.11/classes/*
+# Uncomment these to add them to github
+#!target/scala-2.11/beauty-contest-fastopt.js
+#!target/scala-2.11/beauty-contest-opt.js
+#!index-dev.html
+#!index-opt.html
