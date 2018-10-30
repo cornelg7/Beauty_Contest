@@ -29,7 +29,7 @@ class Round(p: Float, playerList: List[Player]) {
     (sum.toFloat / playerAndNumberList.length.toFloat * p).toInt
   }
 
-  private def tupleToCaseClass(x:((Player, Int), Boolean)): InfoForPlayer = x match{case x@((p, c), w) => InfoForPlayer(p, c, w)}
+  private def tupleToCaseClass(x:((Player, Int), Boolean)): InfoForPlayer = x match{case y@((pl, c), w) => InfoForPlayer(pl, c, w)}
 
   private def computeWinners():List[((Player, Int), Boolean)] = {
     var minDistance = 101 // shortest distance from winning number to each player
