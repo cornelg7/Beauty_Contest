@@ -48,7 +48,7 @@ object basicUI {
   }
 
   @JSExport
-  def main(inp: html.Div, outp: html.Div): Unit = {
+  def main(inp: html.Div): Unit = {
         // ask for p
     val inputForP = input(
       `type`:="text",
@@ -95,13 +95,19 @@ object basicUI {
       value:="Jump to end"
     ).render
 
+    val outputForGame = div(
+      height:="500px",
+      width:="600px",
+      border:="1px solid",
+      id:="output",
+      overflow:="auto"
+    ).render
+
     def startSimulation(): Unit = {
       p = inputForP.value.toFloat
       numberOfPlayers = inputForNumberOfPlayers.value.toInt
       numberOfRounds = inputForNumberOfRounds.value.toInt
       players = parsePlayers(inputForPlayers.value)
-      println("Starting simulation with n = " + numberOfPlayers + ", m = "
-        + numberOfRounds + ", players: " + players)
       currentGame = new Game(p, numberOfPlayers, numberOfRounds, players)
 
         // add onclick events
@@ -112,9 +118,12 @@ object basicUI {
       inp.appendChild(
         div(
           div(nextRoundButton),
-          div(jumpToEndButton)
+          div(jumpToEndButton),
+          outputForGame
         ).render
       )
+
+      currentGame.prepGame()
     }
 
     goButton.onclick = (e: dom.MouseEvent) => startSimulation()
