@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html style="height: 100%">
+<html>
 <head>
-    <title>Example Scala.js application</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Beauty Contest</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
-<body style="margin: 0px; height: 100%">
+<body style="margin: 0px">
 
-<div style="height: 100%" id = "canvas-div">
-    <canvas style="display: block; height: 100%" id="canvas"> </canvas>
+<div id = "input">
+    <!--<canvas style="display: block" id="canvas" width="255" height="255"/>-->
 </div>
 
 <script type="text/javascript" src="../beauty-contest-opt.js"></script>
 <script>
-    beautycontest.HelloWorld0().main(document.getElementById('canvas-div'), document.getElementById('canvas'));
+    beautycontest.Views.basicUI().main(document.getElementById('input'));
 </script>
 </body>
 </html>
