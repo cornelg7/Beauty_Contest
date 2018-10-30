@@ -4,3 +4,7 @@ target/
 .project
 .settings/
 .idea/
+!index-dev.html
+!index-opt.html
+!beauty-contest-fastopt.js
+!beauty-contest-opt.js
