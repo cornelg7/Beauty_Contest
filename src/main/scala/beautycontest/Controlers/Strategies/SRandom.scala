@@ -6,7 +6,7 @@ import scala.util.Random
 
 // basic strategy that returns a random number between 0 and the given (optional) one
 class SRandom(maxRandom: Integer = 101) extends Player{
-  override def name: String = "SRandom"
+  override def name: String = "SRandom" + " " + maxRandom
 
   val rand = new Random()
   override def getChoice: Int = rand.nextInt(maxRandom)
