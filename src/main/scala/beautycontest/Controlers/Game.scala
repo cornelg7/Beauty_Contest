@@ -1,16 +1,19 @@
 package beautycontest.Controlers
 
-import beautycontest.Views.inGameSimulation
+import beautycontest.Helpers
+import beautycontest.Views.{basicUI, inGameSimulation}
 import org.scalajs.dom
+import org.scalajs.dom.html
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 
-class Game(p: Float, numberOfPlayers: Int, numberOfRounds: Int, playerList: List[Player]) {
+class Game(val p: Float, val numberOfPlayers: Int, val numberOfRounds: Int, val playerList: List[Player]) {
 
     // public for all players:
   var previousRoundList:List[Round] = List[Round]()
   var currentRoundNumber = 0
+  var inGameUI = new inGameSimulation(this)
 
   case class Score(player: Player, roundsWon: Int)
   var scoreBoard: List[Score] = fillUpScoreBoard()
@@ -29,12 +32,10 @@ class Game(p: Float, numberOfPlayers: Int, numberOfRounds: Int, playerList: List
     currentRoundNumber = currentRoundNumber + 1
     val currentRound = new Round(p, playerList)
     currentRound.startRound()
-    // printWhatHappened(currentRound)
+    //printWhatHappened(currentRound)
     updateScoreBoard(currentRound)
     previousRoundList = currentRound :: previousRoundList
-    // after last round, print scoreboard
-    if (currentRoundNumber == numberOfRounds)
-      printScoreBoard()
+    inGameUI.updateRoundInfo()
   }
 
   def nextRound(): Unit = {
@@ -43,9 +44,10 @@ class Game(p: Float, numberOfPlayers: Int, numberOfRounds: Int, playerList: List
     currentRoundNumber = currentRoundNumber + 1
     val currentRound = new Round(p, playerList)
     currentRound.startRound()
-    printWhatHappened(currentRound)
+    //printWhatHappened(currentRound)
     updateScoreBoard(currentRound)
     previousRoundList = currentRound :: previousRoundList
+    inGameUI.updateRoundInfo()
   }
 
   def updateScoreBoard(r: Round): Unit = {
@@ -76,8 +78,8 @@ class Game(p: Float, numberOfPlayers: Int, numberOfRounds: Int, playerList: List
     whereToOutput.innerHTML = s + whereToOutput.innerHTML
 
       // after last round, print scoreboard
-    if (currentRoundNumber == numberOfRounds)
-      printScoreBoard()
+//    if (currentRoundNumber == numberOfRounds)
+//      printScoreBoard()
   }
 
   def prepGame(): Unit = {
@@ -88,17 +90,10 @@ class Game(p: Float, numberOfPlayers: Int, numberOfRounds: Int, playerList: List
     //whereToOutput.innerHTML = s
     addUIDs()
 
-    def deleteChildrenOf(s: String): Unit = {
-      val myNode = dom.document.getElementById(s)
-      while (myNode.firstChild != null) {
-        myNode.removeChild(myNode.firstChild)
-      }
-    }
-    deleteChildrenOf("input")
+    Helpers.deleteChildrenOf("input")
 
-    val inGameUI = new inGameSimulation()
-    inGameUI.main()
-
+    inGameUI = new inGameSimulation(this)
+    inGameUI.prepare()
   }
 
   def addUIDs(): Unit = {
@@ -108,4 +103,8 @@ class Game(p: Float, numberOfPlayers: Int, numberOfRounds: Int, playerList: List
 
   def fillUpScoreBoard(): List[Score] = playerList.map(p => Score(p, 0))
 
+  def goBack(): Unit = {
+    Helpers.deleteChildrenOf("game")
+    basicUI.main(dom.document.getElementById("input").asInstanceOf[html.Div])
+  }
 }

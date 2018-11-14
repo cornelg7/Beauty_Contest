@@ -7,7 +7,9 @@ import scala.collection.mutable.ListBuffer
 class Round(p: Float, playerList: List[Player]) {
 
   // public win number for this round
-  var winNumber:Int = 0
+  var winNumber:Float = 0
+  var sumNumber:Int = 0
+  var avgNumber:Float = 0
     // did player player with choice choice win this round?
   case class InfoForPlayer(player: Player, choice: Int, win: Boolean)
     // public list of InfoForPlayer
@@ -21,18 +23,19 @@ class Round(p: Float, playerList: List[Player]) {
     infoList = computeWinners().map(tupleToCaseClass)
   }
 
-  private def computeWinNumber(): Int = {
-    var sum:Integer = 0
+  private def computeWinNumber(): Float = {
+    sumNumber = 0
     playerAndNumberList.foreach {
-      case x@(_, choice) => sum += choice
+      case x@(_, choice) => sumNumber += choice
     }
-    (sum.toFloat / playerAndNumberList.length.toFloat * p).toInt
+    avgNumber = sumNumber.toFloat / playerAndNumberList.length.toFloat
+    avgNumber * p
   }
 
   private def tupleToCaseClass(x:((Player, Int), Boolean)): InfoForPlayer = x match{case y@((pl, c), w) => InfoForPlayer(pl, c, w)}
 
   private def computeWinners():List[((Player, Int), Boolean)] = {
-    var minDistance = 101 // shortest distance from winning number to each player
+    var minDistance: Float = 101.toFloat // shortest distance from winning number to each player
 
     playerAndNumberList.foreach {
       case x@(_, choice) => {

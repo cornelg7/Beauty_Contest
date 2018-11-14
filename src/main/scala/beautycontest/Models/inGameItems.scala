@@ -9,7 +9,8 @@ object inGameItems {
   def newDivOfClass(className: String):html.Div = {
     val toR = div().render
     toR.className = className
-    if (!className.contains("container"))
+    if (!className.contains("container") && className != "buttons" && !className.contains("gameboard")
+      && className != "roundinfo")
       toR.textContent = className
     toR
   }
