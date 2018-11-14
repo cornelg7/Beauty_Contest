@@ -1,5 +1,6 @@
 package beautycontest.Controlers
 
+import beautycontest.Views.inGameSimulation
 import org.scalajs.dom
 
 import scala.scalajs.js
@@ -80,12 +81,24 @@ class Game(p: Float, numberOfPlayers: Int, numberOfRounds: Int, playerList: List
   }
 
   def prepGame(): Unit = {
-    val whereToOutput = dom.document.getElementById("output")
-    val playerNamesListString = playerList.reverse.foldRight("")((pl, st) => st + pl.name + " ")
-    val s:String = "Starting simulation with " + numberOfPlayers +
-      " players and " + numberOfRounds + " rounds<br>List of players:  " + playerNamesListString
-    whereToOutput.innerHTML = s
+    //val whereToOutput = dom.document.getElementById("output")
+    //val playerNamesListString = playerList.reverse.foldRight("")((pl, st) => st + pl.name + " ")
+    //val s:String = "Starting simulation with " + numberOfPlayers +
+    //  " players and " + numberOfRounds + " rounds<br>List of players:  " + playerNamesListString
+    //whereToOutput.innerHTML = s
     addUIDs()
+
+    def deleteChildrenOf(s: String): Unit = {
+      val myNode = dom.document.getElementById(s)
+      while (myNode.firstChild != null) {
+        myNode.removeChild(myNode.firstChild)
+      }
+    }
+    deleteChildrenOf("input")
+
+    val inGameUI = new inGameSimulation()
+    inGameUI.main()
+
   }
 
   def addUIDs(): Unit = {

@@ -4,6 +4,7 @@ import beautycontest.Controlers.Strategies.{SConstant, SRandom}
 import beautycontest.Controlers.{Game, Player}
 import org.scalajs.dom
 import org.scalajs.dom.html
+import org.scalajs.dom.html.Input
 import scalatags.JsDom.all.{`type`, input, placeholder}
 
 import scala.scalajs.js.annotation.JSExport
@@ -50,7 +51,7 @@ object basicUI {
   @JSExport
   def main(inp: html.Div): Unit = {
         // ask for p
-    val inputForP = input(
+    val inputForP: Input = input(
       `type`:="text",
       value:=0.8,
       placeholder:="p"
