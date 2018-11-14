@@ -20,6 +20,7 @@ class inGameSimulation(currentGame: Game) {
    // updateRoundInfo()
     addButtons()
     fillGameBoard()
+    fillScoreBoard()
   }
 
   val where: Node = dom.document.getElementById("game")
@@ -37,6 +38,48 @@ class inGameSimulation(currentGame: Game) {
   case class playerAndCard(player: Player, cardContainer: Div, cardHeader: Div, cardBody: Div)
   var playerCards: List[playerAndCard] = List()
 
+  case class scoreBoardEntry(place: Int, player: Player, roundsWon: Int, rowContainer: Div,
+                             rowPlace: Div, rowName: Div, rowScore: Div)
+  var scoreBoardEntries: List[scoreBoardEntry] = List()
+  var scoreBoardHeader: scoreBoardEntry = scoreBoardEntry(0, null, 0,
+    inGameItems.newDivOfClass("highscore-row"),
+    inGameItems.newDivOfClass("highscore-row-place"),
+    inGameItems.newDivOfClass("highscore-row-name"),
+    inGameItems.newDivOfClass("highscore-row-score"))
+
+
+  def fillScoreBoard(): Unit = {
+      // fill header
+    scoreBoardHeader.rowPlace.innerHTML = "##"
+    scoreBoardHeader.rowName.innerHTML = "Player Name"
+    scoreBoardHeader.rowScore.innerHTML = "Score"
+    scoreBoardHeader.rowContainer.appendChild(scoreBoardHeader.rowPlace)
+    scoreBoardHeader.rowContainer.appendChild(scoreBoardHeader.rowName)
+    scoreBoardHeader.rowContainer.appendChild(scoreBoardHeader.rowScore)
+    highscore.appendChild(scoreBoardHeader.rowContainer)
+
+      // the rest..
+    var i: Int = 1
+    // for each player, create a card and save it in playerCards
+    currentGame.playerList.foreach(x => {
+      val elem = scoreBoardEntry(i, x, 0,
+        inGameItems.newDivOfClass("highscore-row"),
+        inGameItems.newDivOfClass("highscore-row-place"),
+        inGameItems.newDivOfClass("highscore-row-name"),
+        inGameItems.newDivOfClass("highscore-row-score")
+      )
+      highscore.appendChild(elem.rowContainer)
+      elem.rowContainer.appendChild(elem.rowPlace)
+      elem.rowContainer.appendChild(elem.rowName)
+      elem.rowContainer.appendChild(elem.rowScore)
+      elem.rowPlace.innerHTML = "#" + i
+      elem.rowName.innerHTML = elem.player.uid + ". " + elem.player.name
+      elem.rowScore.innerHTML = "" + elem.roundsWon
+
+      scoreBoardEntries = elem :: scoreBoardEntries
+      i = i + 1
+    })
+  }
 
   def fillGameBoard(): Unit = {
       // for each player, create a card and save it in playerCards
@@ -72,11 +115,36 @@ class inGameSimulation(currentGame: Game) {
     })
   }
 
+  def updateScoreBoard(): Unit = {
+    val infoListMap = currentGame.previousRoundList.head.infoList.map{x => x.player -> (x.choice, x.win) }.toMap
+    scoreBoardEntries = scoreBoardEntries.map(x => {
+      if (infoListMap(x.player)._2) {  // if player x won
+        x.rowScore.innerHTML = "" + (x.roundsWon + 1)
+        x.copy(roundsWon = x.roundsWon + 1)
+      }
+      else
+        x
+    })
+      // remove all children from highscore, sort scoreBoardEntries by roundswon desc, add back to highscore
+    while (highscore.firstChild != null) {
+      highscore.removeChild(highscore.firstChild)
+    }
+    highscore.appendChild(scoreBoardHeader.rowContainer)
+    scoreBoardEntries = scoreBoardEntries.sortBy(x => -x.roundsWon)
+    var i = 1
+    scoreBoardEntries.foreach(x => {
+      x.rowPlace.innerHTML = "#" + i
+      highscore.appendChild(x.rowContainer)
+      i = i + 1
+    })
+  }
+
   def updateRoundInfo(): Unit = {
     var sumToShow: Int = 0
     var avgToShow, wToShow: Double = 0.toDouble
     try {
       updatePlayerCards()
+      updateScoreBoard()
       sumToShow = currentGame.previousRoundList.head.sumNumber
       avgToShow = Helpers.rround2(currentGame.previousRoundList.head.avgNumber)
       wToShow = Helpers.rround2(currentGame.previousRoundList.head.winNumber)
@@ -86,7 +154,8 @@ class inGameSimulation(currentGame: Game) {
   }
 
   def edbuging(): Unit = {
-    gameboard.appendChild(inGameItems.newDivOfClass("gameboard-item"))
+    //gameboard.appendChild(inGameItems.newDivOfClass("gameboard-item"))
+    highscore.appendChild(inGameItems.newDivOfClass("highscore-row"))
   }
 
   def addButtons(): Unit = {

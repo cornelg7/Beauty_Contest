@@ -10,7 +10,7 @@ object inGameItems {
     val toR = div().render
     toR.className = className
     if (!className.contains("container") && className != "buttons" && !className.contains("gameboard")
-      && className != "roundinfo")
+      && className != "roundinfo" && !className.contains("highscore"))
       toR.textContent = className
     toR
   }
