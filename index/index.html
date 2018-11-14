@@ -3,17 +3,53 @@
 <head>
   <title>Beauty Contest</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
-<body style="margin: 0px">
+<body>
 
 <div id = "input">
     <!--<canvas style="display: block" id="canvas" width="255" height="255"/>-->
 </div>
+<div id = "game"> </div>
 
 <script type="text/javascript" src="../beauty-contest-fastopt.js"></script>
 <script type="text/javascript" src="/workbench.js"></script>
 <script>
     beautycontest.Views.basicUI().main(document.getElementById('input'));
 </script>
+
+<!--
+<div class="gamecontainer">
+    <div class="upcontainer">
+        <div class="leftcontainer">
+            <div class="roundinfo"> roundinfo
+            </div>
+            <div class="gameboard"> gameboard
+            </div>
+            <div class="buttons"> buttons
+            </div>
+        </div>
+        <div class="rightcontainer">
+            <div class="gameinfo"> game info
+            </div>
+            <div class="highscore"> highschore
+            </div>
+        </div>
+    </div>
+    <div class="roundhistory"> round history
+    </div>
+</div>
+-->
+<!--<script> $(function(){ $("#highscore").load("highscore.html"); }); </script> -->
+<!--<script> $(function(){ $("#roundinfo").load("roundinfo.html"); }); </script>
+<script> $(function(){ $("#gameinfo").load("gameinfo.html"); }); </script>
+<script> $(function(){ $("#gameboard").load("gameboard.html"); }); </script>
+<script> $(function(){ $("#roundhistory").load("roundhistory.html"); }); </script>
+-->
 </body>
 </html>
