@@ -8,7 +8,7 @@ import org.scalajs.dom.html
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 
-class Game(val p: Float, val numberOfPlayers: Int, val numberOfRounds: Int, val playerList: List[Player]) {
+class Game(val p: Float, val numberOfPlayers: Int, val numberOfRounds: Int, val playerList: List[Player], val teamList: List[List[Player]] = List()) {
 
     // public for all players:
   var previousRoundList:List[Round] = List[Round]()
@@ -82,18 +82,28 @@ class Game(val p: Float, val numberOfPlayers: Int, val numberOfRounds: Int, val 
 //      printScoreBoard()
   }
 
+  def broadcastThisToPlayers(): Unit = {
+    playerList.foreach(x => x.myGame = this)
+  }
+
   def prepGame(): Unit = {
-    //val whereToOutput = dom.document.getElementById("output")
-    //val playerNamesListString = playerList.reverse.foldRight("")((pl, st) => st + pl.name + " ")
-    //val s:String = "Starting simulation with " + numberOfPlayers +
-    //  " players and " + numberOfRounds + " rounds<br>List of players:  " + playerNamesListString
-    //whereToOutput.innerHTML = s
+
     addUIDs()
+
+    broadcastThisToPlayers()
 
     Helpers.deleteChildrenOf("input")
 
     inGameUI = new inGameSimulation(this)
     inGameUI.prepare()
+  }
+
+  def prepGameNoUI(): Unit = {
+
+    addUIDs()
+
+    broadcastThisToPlayers()
+
   }
 
   def addUIDs(): Unit = {
