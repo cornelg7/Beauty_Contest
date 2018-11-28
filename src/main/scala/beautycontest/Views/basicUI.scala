@@ -352,13 +352,14 @@ object basicUI {
       protagonistPawn.uid = 2
       val teams:List[List[Player]] = List(List(protagonist, protagonistPawn))
 
-      for (cj <- 0 to 5) {
+      for (cj <- 0 to 100) {
+        println("working on " + cj)
         var rowbody = List[Ccell]()
         games = List[gameResult]()
        // if (true) {  // constant i can play against rand i
           for (i <- 1 to maxNumberOfPlayers) {
             val nn = i + 2
-            val rr = 1000
+            val rr = 100
             val pp: Float = 0.8.toFloat
             var pplayers = protagonistPawn :: protagonist :: List[Player]()
             for (j <- 1 to i) pplayers = new SRandom(cj) :: pplayers

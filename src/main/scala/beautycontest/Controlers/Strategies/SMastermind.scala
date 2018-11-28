@@ -83,9 +83,9 @@ class SMastermind extends Player{
         })
       }
       else { // give up..
-        myChoice = 20
+        myChoice = wWithoutUs.toInt
         myPawns.foreach(x => {
-          pawnChoices = pawnChoices ++ List(30)
+          pawnChoices = pawnChoices ++ List(wWithoutUs.toInt)
         })
       }
 

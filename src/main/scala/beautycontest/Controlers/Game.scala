@@ -23,19 +23,19 @@ class Game(val p: Float, val numberOfPlayers: Int, val numberOfRounds: Int, val 
 
   def jumpToEnd(): Unit = {
     //noinspection LoopVariableNotUpdated
-    while (currentRoundNumber < numberOfRounds) nextRoundWithoutPrint()
+    while (currentRoundNumber < numberOfRounds) nextRoundWithoutUI()
   }
 
-  def nextRoundWithoutPrint(): Unit = {
+  def nextRoundWithoutUI(): Unit = {
     if (currentRoundNumber >= numberOfRounds)
       return
     currentRoundNumber = currentRoundNumber + 1
-    val currentRound = new Round(p, playerList)
+    val currentRound = new Round(p, playerList, teamList)
     currentRound.startRound()
     //printWhatHappened(currentRound)
     updateScoreBoard(currentRound)
     previousRoundList = currentRound :: previousRoundList
-    inGameUI.updateRoundInfo()
+   // inGameUI.updateRoundInfo()
   }
 
   def nextRound(): Unit = {
