@@ -30,7 +30,7 @@ class SMastermind extends Player{
     // TODO: Update for better formula
     // TODO: update formula for more than one pawn
   def pawnChoiceFormula(wWithoutUs: Double, b: Double): Int = {
-    ((wWithoutUs + myGame.numberOfPlayers * b)/myGame.p).toInt
+    ((wWithoutUs + (myGame.numberOfPlayers - 1) * b)/myGame.p).toInt
   }
 
   // TODO: predict the future better
@@ -50,48 +50,96 @@ class SMastermind extends Player{
     s/n
   }
 
+  def previousWinNumberWithoutUs(): Double = {
+    var prevSumWithoutUs = myGame.previousRoundList.head.sumNumber
+    prevSumWithoutUs -= myChoice
+    pawnChoices.foreach(x => prevSumWithoutUs -= x)
+    val nWithoutUs = myGame.numberOfPlayers - 1 - myPawns.length
+    val avgWithoutUs = prevSumWithoutUs / nWithoutUs
+    myGame.p * avgWithoutUs
+  }
+
+  def addPreviousWinNumberWithoutUsToAvg(currentAverage: Double): Double = {
+    val toR = totalWWithoutUsN * currentAverage / (totalWWithoutUsN+1) + previousWinNumberWithoutUs()/(totalWWithoutUsN + 1)
+    totalWWithoutUsN += 1
+    toR
+  }
+
+  var totalWWithoutUsN: Int = 0
+  var totalWWithoutUsAverage: Double = 0
+
   def prepareChoices(): Unit = {
     if (myGame.currentRoundNumber == 1)
       setInitialChoices()
     else {
-    //  println(myGame.previousRoundList.head.winNumber)
-    //  println("DONE, next round........................")
-    //  println("")
+//      println(myGame.previousRoundList.head.winNumber)
+//      println("all choices: ")
+//      myGame.previousRoundList.head.infoList.foreach(x => print(x.choice + " "))
+//      println("")
+//      println("DONE, next round........................")
+//      println("")
 
 
       // find this number
-      val wWithoutUs: Double = predictingTheFuture()
+      totalWWithoutUsAverage = addPreviousWinNumberWithoutUsToAvg(totalWWithoutUsAverage)
+      val wWithoutUs: Double = totalWWithoutUsAverage
+
+//      println("wwithoutus is: " + wWithoutUs)
 
       // then change the w in our favor by b
         // first find max b
           // TODO: choose b better
       var b: Double = -20
       val stp: Double = 0.5
-      val threshold: Double = 10
-      b = -5
-      while (pawnChoiceFormula(wWithoutUs, b) < 0 || wWithoutUs + b < 0) {
-        b = b + stp
+      val startPointForB: Double = 10
+      val threshold: Double = 2
+
+      if (wWithoutUs >= 50) { // then try to have negative b
+        b = -startPointForB
+        while (pawnChoiceFormula(wWithoutUs, b) < 0 || wWithoutUs + b < 0) {
+          b = b + stp
+        }
+        if (b == 0 || scala.math.abs(b) < threshold) {
+          b = startPointForB
+          while (pawnChoiceFormula(wWithoutUs, b) > 100 || wWithoutUs + b > 100) {
+            b = b - stp
+          }
+        }
       }
-      while (pawnChoiceFormula(wWithoutUs, b) > 100 || wWithoutUs + b > 100) {
-        b = b - stp
+      else { // try to have positive b
+        b = startPointForB
+        while (pawnChoiceFormula(wWithoutUs, b) > 100 || wWithoutUs + b > 100) {
+          b = b - stp
+        }
+        if (b == 0 || scala.math.abs(b) < threshold) {
+          b = -startPointForB
+          while (pawnChoiceFormula(wWithoutUs, b) < 0 || wWithoutUs + b < 0) {
+            b = b + stp
+          }
+        }
       }
-      if (pawnChoiceFormula(wWithoutUs, b) >= 0 || wWithoutUs + b >= 0) {
+//      println("b: " + b)
+
+      if ((pawnChoiceFormula(wWithoutUs, b) >= 0 || wWithoutUs + b >= 0) && (pawnChoiceFormula(wWithoutUs, b) <= 100 || wWithoutUs + b <= 100)) {
         // then update my choice and pawns choices
         myChoice = (wWithoutUs + b).toInt
+        pawnChoices = List()
         myPawns.foreach(x => {
           pawnChoices = pawnChoices ++ List(pawnChoiceFormula(wWithoutUs, b))
         })
       }
-      else { // give up..
+      else { // should never reach this.
+        println("waaaaaaaaaaaaaaaaaat... b: " + b)
+        // but in case it does, just pick the avg win number without them
         myChoice = wWithoutUs.toInt
+        pawnChoices = List()
         myPawns.foreach(x => {
           pawnChoices = pawnChoices ++ List(wWithoutUs.toInt)
         })
       }
 
-
-     // println("so i choose " + myChoice + " and pawn chooses " + pawnChoiceFormula(wWithoutUs, b))
-     // println("but the actual win number was:")
+//      println("so i choose " + myChoice + " and pawn chooses " + pawnChoiceFormula(wWithoutUs, b))
+//      println("but the actual win number was:")
     }
   }
 
