@@ -66,8 +66,8 @@ object basicUI {
   }
 
   def startConstWars(strats: String, outp: html.Div): Unit = {
-   // val ci = strats.split(" ").toList.head.toInt
-   // val cj = strats.split(" ").toList.tail.head.toInt
+    // val ci = strats.split(" ").toList.head.toInt
+    // val cj = strats.split(" ").toList.tail.head.toInt
     var s = ""
     var ss = ""
     var cgame: Game = null
@@ -107,6 +107,93 @@ object basicUI {
             win = cgame.scoreBoard.filter(x => x.player.name == protagonist.name).head.roundsWon
             //cgame.scoreBoard.filter(x => x.roundsWon == 1).foreach(x => if (x.player.equals(protagonist)) win = 1)
             games = gameResult(cj, i, win) :: games
+          }
+          games = games.reverse
+          var ws = 0
+          ss = "i am " + ci + "<ul>"
+          games.foreach(x => {
+            ss = ss + "<li>" + "vs " + x.hm + " of " + x.vs + ": " + x.w + "</li>"
+            ws = ws + x.w
+          })
+          ss = ss + "</ul>"
+          ss = ws + ss
+          var fr = Helpers.rround2(ws.toFloat/(maxNumberOfPlayers-1))
+          rowbody = Ccell(fr) :: rowbody
+        }
+        else {
+          rowbody = Ccell((-1).toFloat) :: rowbody
+        }
+      }
+      rowbody = rowbody.reverse
+      tablebody = Rrow(ci, rowbody) :: tablebody
+    }
+    tablebody = tablebody.reverse
+    var results = Ttable(tablehead, tablebody)
+    s = "<table>"
+    results.hd.foreach(x => x)
+
+    val tt = table(style:="border: 1px solid black; border-collapse: collapse")(
+      tr(
+        for (x <- results.hd) yield th(style:="border: 1px solid black;")(x)
+      ),
+      for (x <- results.body) yield tr(
+        th(style:="border: 1px solid black;")(x.vs),
+        for (y <- x.body) yield td(style:="border: 1px solid black;")(
+          y.p
+        )
+      )
+    ).render
+
+    s = s + "</table>"
+    //outp.innerHTML = ss
+    outp.appendChild(tt)
+
+  }
+
+
+  def startConstWarsBalanced(strats: String, outp: html.Div): Unit = {
+    // val ci = strats.split(" ").toList.head.toInt
+    // val cj = strats.split(" ").toList.tail.head.toInt
+    var s = ""
+    var ss = ""
+    var cgame: Game = null
+    case class gameResult(vs: Int, hm: Int, w: Int)
+    var games = List[gameResult]()
+    case class Ccell(p: Double)
+    case class Rrow(vs: Int, body: List[Ccell])
+    case class Ttable(hd: List[String], body: List[Rrow])
+    var maxNumberOfPlayers = 10
+
+    var tablehead = List[String]()
+    for (i <- 0 to 100)
+      tablehead = (" "+i+" ") :: tablehead
+    tablehead = tablehead.reverse
+    tablehead = "v ci, cj >" :: tablehead
+
+    var tablebody = List[Rrow]()
+
+    for (ci <- 0 to 100) {
+      println("working on " + ci)
+      val protagonist = new SConstant(ci)
+      protagonist.uid = 1
+      var rowbody = List[Ccell]()
+      for (cj <- 0 to 100) {
+        games = List[gameResult]()
+        if (ci != cj) {
+          for (i <- 2 to maxNumberOfPlayers) {
+            val nn = i + 1
+            val rr = 1
+            val pp: Float = 0.8.toFloat
+            var pplayers = protagonist :: List[Player]()
+            for (j <- 1 to i) pplayers = new SConstant(cj) :: pplayers
+            pplayers = pplayers.reverse
+            cgame = new Game(pp, nn, rr, pplayers)
+            cgame.prepGameNoUI()
+            cgame.jumpToEnd()
+            var win = 0
+            win = cgame.scoreBoard.filter(x => x.player.name == protagonist.name).head.roundsWon
+            //cgame.scoreBoard.filter(x => x.roundsWon == 1).foreach(x => if (x.player.equals(protagonist)) win = 1)
+            games = gameResult(cj, i, win*(i+1)) :: games
           }
           games = games.reverse
           var ws = 0
@@ -329,7 +416,7 @@ object basicUI {
     var s = ""
     var ss = ""
     var cgame: Game = null
-    case class gameResult(vs: Int, hm: Int, w: Double)
+    case class gameResult(vs: Int, hm: Int, w: Double, trueWin: Double)
     var games = List[gameResult]()
     case class Ccell(p: Double)
     case class Rrow(vs: Int, body: List[Ccell])
@@ -346,11 +433,7 @@ object basicUI {
 
    // for (ci <- 0 to 100) {
      // ss = "i am " + ci + "<ul>"
-      val protagonist = new SMastermind
-      protagonist.uid = 1
-      val protagonistPawn = new SPawn(protagonist)
-      protagonistPawn.uid = 2
-      val teams:List[List[Player]] = List(List(protagonist, protagonistPawn))
+
 
       for (cj <- 0 to 100) {
         println("working on " + cj)
@@ -359,9 +442,17 @@ object basicUI {
        // if (true) {  // constant i can play against rand i
           for (i <- 1 to maxNumberOfPlayers) {
             val nn = i + 2
-            val rr = 100
+            val rr = 1000
             val pp: Float = 0.8.toFloat
+
+            val protagonist = new SMastermind
+            protagonist.uid = 1
+            val protagonistPawn = new SPawn(protagonist)
+            protagonistPawn.uid = 2
+            val teams:List[List[Player]] = List(List(protagonist, protagonistPawn))
+
             var pplayers = protagonistPawn :: protagonist :: List[Player]()
+
             for (j <- 1 to i) pplayers = new SRandom(cj) :: pplayers
             pplayers = pplayers.reverse
             cgame = new Game(pp, nn, rr, pplayers, teams)
@@ -370,8 +461,9 @@ object basicUI {
             var win = 0.toDouble
             win = cgame.scoreBoard.filter(x => x.player.name == protagonist.name).head.roundsWon
             //cgame.scoreBoard.filter(x => x.roundsWon == 1).foreach(x => if (x.player.equals(protagonist)) win = 1)
-            games = gameResult(cj, i, win/rr.toDouble) :: games
-            rowbody = Ccell(win/rr.toDouble) :: rowbody
+            games = gameResult(cj, i, win/rr.toDouble, win/rr.toDouble) :: games
+           // println("win eff against " + i + " of rand(" + cj + "): " + win/rr.toDouble/2*(i+2))
+            rowbody = Ccell(Helpers.rround2double(win/rr.toDouble)) :: rowbody
           }
           games = games.reverse
           var ws = 0.toDouble
@@ -412,6 +504,93 @@ object basicUI {
     outp.appendChild(tt)
 
   }
+
+  def start2v2ConstWars(strats: String, outp: html.Div): Unit = {
+    var cgame: Game = null
+    case class pairOfInt(_0: Int, _1: Int)
+    case class gameResult(vs: pairOfInt, w: Int)
+    case class Ccell(p: Double)
+    case class Rrow(teammate: Int, body: List[Ccell])
+    case class Ttable(hd: List[String], body: List[Rrow])
+    val nn = 4
+    val rr = 1
+    val pp: Float = 0.8.toFloat
+
+    var tablehead = List[String]()
+    for (i <- 0 to 100)
+      tablehead = (" "+i) :: tablehead
+    tablehead = tablehead.reverse
+    tablehead = "v team w/ >" :: tablehead
+
+    var tablebody = List[Rrow]()
+
+    for (ci0 <- 0 to 100) {
+      var rowbody = List[Ccell]()
+      for (ci1 <- 0 to 100) {
+        if (ci1 >= ci0) {
+          println("working on " + ci0 + ", " + ci1)
+          val protagonist0 = new SConstant(ci0)
+          val protagonist1 = new SConstant(ci1)
+          protagonist0.uid = 1
+          protagonist1.uid = 2
+          var winPercentages = List[Double]()
+          for (cj0 <- 0 to 100) {
+            for (cj1 <- cj0 to 100) {
+              val antagonist0 = new SConstant(cj0)
+              val antagonist1 = new SConstant(cj1)
+              antagonist0.uid = 3
+              antagonist1.uid = 4
+              if (ci0 != cj0 || ci1 != cj1) {
+                val teams: List[List[Player]] = List(List(protagonist0, protagonist1), List(antagonist0, antagonist1))
+                var pplayers = protagonist1 :: protagonist0 :: List[Player]()
+                pplayers = antagonist0 :: pplayers
+                pplayers = antagonist1 :: pplayers
+                pplayers = pplayers.reverse
+                cgame = new Game(pp, nn, rr, pplayers, teams)
+                cgame.prepGameNoUI()
+                cgame.jumpToEnd()
+                var win = 0
+                win = cgame.scoreBoard.filter(x => x.player.uid == protagonist0.uid).head.roundsWon
+                winPercentages = win :: winPercentages
+              }
+            }
+          }
+          var winSum: Double = 0
+          var winN = 0
+          var winAvg: Double = 0
+          winPercentages.foreach(x => {
+            winSum += x; winN = winN + 1
+          })
+          winAvg = winSum / winN
+          rowbody = Ccell(Helpers.rround2double(winAvg)) :: rowbody
+        }
+        else {
+          rowbody = Ccell(Helpers.rround2double(0)) :: rowbody
+        }
+      }
+      rowbody = rowbody.reverse
+      tablebody = Rrow(ci0, rowbody) :: tablebody
+    }
+    tablebody = tablebody.reverse
+    var results = Ttable(tablehead, tablebody)
+    results.hd.foreach(x => x)
+
+    val tt = table(style:="border: 1px solid black; border-collapse: collapse")(
+      tr(
+        for (x <- results.hd) yield th(style:="border: 1px solid black;")(x)
+      ),
+      for (x <- results.body) yield tr(
+        th(style:="border: 1px solid black;")(x.teammate),
+        for (y <- x.body) yield td(style:="border: 1px solid black;")(
+          y.p
+        )
+      )
+    ).render
+
+    outp.appendChild(tt)
+  }
+
+
 
   @JSExport
   def main(inp: html.Div): Unit = {
@@ -480,13 +659,19 @@ object basicUI {
       value:="mastermind vs rand"
     ).render
 
+    // debuging
+    val testButton2v2ConstTeamsWar = input(
+      `type`:="button",
+      value:="2v2 Consts"
+    ).render
+
       // go to next round
     val nextRoundButton = input(
       `type`:="button",
       value:="Next round"
     ).render
 
-      // jump to end of the game
+    // jump to end of the game
     val jumpToEndButton = input(
       `type`:="button",
       value:="Jump to end"
@@ -525,10 +710,11 @@ object basicUI {
     }
 
     goButton.onclick = (e: dom.MouseEvent) => startSimulation()
-    testButtonConstWar.onclick = (e: dom.MouseEvent) => startConstWars(inputForConstWars.value, outputForGame)
+    testButtonConstWar.onclick = (e: dom.MouseEvent) => startConstWarsBalanced(inputForConstWars.value, outputForGame)
     testButtonRandWar.onclick = (e: dom.MouseEvent) => startRandWars(inputForConstWars.value, outputForGame)
     testButtonConstRandWar.onclick = (e: dom.MouseEvent) => startConstVsRandWars(inputForConstWars.value, outputForGame)
     testButtonMastermindRandWar.onclick = (e: dom.MouseEvent) => startMastermindVsRandWars(inputForConstWars.value, outputForGame)
+    testButton2v2ConstTeamsWar.onclick = (e:dom.MouseEvent) => start2v2ConstWars(inputForConstWars.value, outputForGame)
 
     inp.appendChild(
       div(
@@ -542,6 +728,7 @@ object basicUI {
         div(testButtonRandWar),
         div(testButtonConstRandWar),
         div(testButtonMastermindRandWar),
+        div(testButton2v2ConstTeamsWar),
         div(outputForGame)
       ).render
     )
