@@ -1,0 +1,2 @@
+scalac *.scala && scala beautycontest.Main
+scalac Main.scala && scala beautycontest.Main
